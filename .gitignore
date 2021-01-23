@@ -1,0 +1,8 @@
+
+spark_test/.idea/
+
+.DS_Store
+
+spark_test/resources/
+
+spark_test/target/
