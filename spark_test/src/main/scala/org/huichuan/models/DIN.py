@@ -64,8 +64,6 @@ movie_emb_col = tf.feature_column.embedding_column(movie_col, EMBEDDING_SIZE)
 user_col = tf.feature_column.categorical_column_with_identity(key='userId', num_buckets=30001)
 user_emb_col = tf.feature_column.embedding_column(user_col, EMBEDDING_SIZE)
 
-
-
 # genre features vocabulary
 genre_vocab = ['Film-Noir', 'Action', 'Adventure', 'Horror', 'Romance', 'War', 'Comedy', 'Western', 'Documentary',
                'Sci-Fi', 'Drama', 'Thriller',
@@ -108,6 +106,7 @@ context_features = [
 
 candidate_emb_layer = tf.keras.layers.DenseFeatures([movie_emb_col])(inputs)
 user_behaviors_layer = tf.keras.layers.DenseFeatures(recent_rate_col)(inputs)
+
 user_profile_layer = tf.keras.layers.DenseFeatures(user_profile)(inputs)
 context_features_layer = tf.keras.layers.DenseFeatures(context_features)(inputs)
 
@@ -115,6 +114,7 @@ context_features_layer = tf.keras.layers.DenseFeatures(context_features)(inputs)
 user_behaviors_emb_layer = tf.keras.layers.Embedding(input_dim=1001,
                                                      output_dim=EMBEDDING_SIZE,
                                                      mask_zero=True)(user_behaviors_layer)  # mask zero
+
 repeated_candidate_emb_layer = tf.keras.layers.RepeatVector(RECENT_MOVIES)(candidate_emb_layer)
 
 activation_sub_layer = tf.keras.layers.Subtract()([user_behaviors_emb_layer,
@@ -128,9 +128,13 @@ activation_all = tf.keras.layers.concatenate([activation_sub_layer, user_behavio
 activation_unit = tf.keras.layers.Dense(32)(activation_all)
 activation_unit = tf.keras.layers.PReLU()(activation_unit)
 activation_unit = tf.keras.layers.Dense(1, activation='sigmoid')(activation_unit)
+
 activation_unit = tf.keras.layers.Flatten()(activation_unit)
+
 activation_unit = tf.keras.layers.RepeatVector(EMBEDDING_SIZE)(activation_unit)
+
 activation_unit = tf.keras.layers.Permute((2, 1))(activation_unit)
+
 activation_unit = tf.keras.layers.Multiply()([user_behaviors_emb_layer, activation_unit])
 
 # sum pooling
@@ -147,6 +151,8 @@ output_layer = tf.keras.layers.Dense(1, activation='sigmoid')(output_layer)
 
 model = tf.keras.Model(inputs, output_layer)
 # compile the model, set loss function, optimizer and evaluation metrics
+print(model.summary())
+exit()
 model.compile(
     loss='binary_crossentropy',
     optimizer='adam',
