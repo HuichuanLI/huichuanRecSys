@@ -6,3 +6,7 @@ spark_test/.idea/
 spark_test/resources/
 
 spark_test/target/
+
+spark_test/src/main/scala/org/huichuan/pypsark/.ipynb_checkpoints/
+
+spark_test/src/main/scala/org/huichuan/models/.ipynb_checkpoints/
